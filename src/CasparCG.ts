@@ -1,8 +1,8 @@
 import {EventEmitter} from "hap";
-import {CasparCGSocket, SocketState, AMCP as AMCPNS} from "./lib/CasparCGSocket";
-// AMCPNS
-import CasparCGSocketResponse = AMCPNS.CasparCGSocketResponse;
-import {AMCP} from "./lib/AMCP";
+import {CasparCGSocket, SocketState} from "./lib/CasparCGSocket";
+import {AMCP, AMCPUtil as AMCPUtilNS} from "./lib/AMCP";
+// AMCPUtilNS
+import CasparCGSocketResponse = AMCPUtilNS.CasparCGSocketResponse;
 import {Enum} from "./lib/ServerStateEnum";
 import {IConnectionOptions, ConnectionOptions, Options as OptionsNS} from "./lib/AMCPConnectionOptions";
 // Options NS

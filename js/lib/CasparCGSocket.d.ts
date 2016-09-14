@@ -28,27 +28,6 @@ export declare enum SocketState {
 /**
  *
  */
-export declare namespace AMCP {
-    /**
-     *
-     */
-    class CasparCGSocketResponse {
-        statusCode: number;
-        responseString: string;
-        items: Array<string>;
-        /**
-         *
-         */
-        constructor(responseString: string);
-        /**
-         *
-         */
-        static evaluateStatusCode(responseString: string): number;
-    }
-}
-/**
- *
- */
 export declare class CasparCGSocket extends EventEmitter implements ICasparCGSocket {
     private _client;
     private _host;

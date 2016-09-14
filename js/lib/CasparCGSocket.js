@@ -7,6 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var net = require("net");
 var _ = require("highland");
 var hap_1 = require("hap");
+var AMCP_1 = require("./AMCP");
 // Command NS
 var AbstractCommand_1 = require("./AbstractCommand");
 var IAMCPStatus = AbstractCommand_1.Command.IAMCPStatus;
@@ -26,37 +27,6 @@ var SocketState = exports.SocketState;
 /**
  *
  */
-var AMCP;
-(function (AMCP) {
-    /**
-     *
-     */
-    var CasparCGSocketResponse = (function () {
-        /**
-         *
-         */
-        function CasparCGSocketResponse(responseString) {
-            this.items = new Array();
-            this.statusCode = CasparCGSocketResponse.evaluateStatusCode(responseString);
-            this.responseString = responseString;
-        }
-        /**
-         *
-         */
-        CasparCGSocketResponse.evaluateStatusCode = function (responseString) {
-            var code = parseInt(responseString.substr(0, 3), 10);
-            if (code !== NaN) {
-                return code;
-            }
-            return null;
-        };
-        return CasparCGSocketResponse;
-    }());
-    AMCP.CasparCGSocketResponse = CasparCGSocketResponse;
-})(AMCP = exports.AMCP || (exports.AMCP = {}));
-/**
- *
- */
 var CasparCGSocket = (function (_super) {
     __extends(CasparCGSocket, _super);
     /**
@@ -73,12 +43,12 @@ var CasparCGSocket = (function (_super) {
         this._autoReconnect = autoReconnect;
         this._reconnectAttempts = autoReconnectAttempts;
         this._client = new net.Socket();
-        this._client.on("error", function (error) { return _this._onError(error); });
         this._client.on("lookup", function () { return _this._onLookup(); });
         this._client.on("connect", function () { return _this._onConnected(); });
+        this._client.on("error", function (error) { return _this._onError(error); });
         this._client.on("drain", function () { return _this._onDrain(); });
         this._client.on("close", function (hadError) { return _this._onClose(hadError); });
-        _(this._client)["splitBy"](/(?=\r\n)/).each(function (i) { return _this._parseResponseGroups(i); }).errors(function (error, rethrow) { return _this._onError(error); }); // @todo: ["splitBy] hack due to missing type
+        _(this._client)["splitBy"](/(?=\r\n)/).errors(function (error) { return _this._onError(error); }).each(function (i) { return _this._parseResponseGroups(i); }); // @todo: ["splitBy] hack due to missing type
         this.socketStatus = SocketState.configured;
     }
     Object.defineProperty(CasparCGSocket.prototype, "autoReconnect", {
@@ -269,8 +239,8 @@ var CasparCGSocket = (function (_super) {
      */
     CasparCGSocket.prototype._parseResponseGroups = function (i) {
         i = (i.length > 2 && i.slice(0, 2) === "\r\n") ? i.slice(2) : i;
-        if (AMCP.CasparCGSocketResponse.evaluateStatusCode(i) === 200) {
-            this._parsedResponse = new AMCP.CasparCGSocketResponse(i);
+        if (AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 200) {
+            this._parsedResponse = new AMCP_1.AMCPUtil.CasparCGSocketResponse(i);
         }
         else if (this._parsedResponse && this._parsedResponse.statusCode === 200) {
             if (i !== "\r\n") {
@@ -281,8 +251,8 @@ var CasparCGSocket = (function (_super) {
                 this._parsedResponse = null;
             }
         }
-        if (AMCP.CasparCGSocketResponse.evaluateStatusCode(i) === 201) {
-            this._parsedResponse = new AMCP.CasparCGSocketResponse(i);
+        if (AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 201) {
+            this._parsedResponse = new AMCP_1.AMCPUtil.CasparCGSocketResponse(i);
         }
         else if (this._parsedResponse && this._parsedResponse.statusCode === 201) {
             this._parsedResponse.items.push(i);
@@ -290,7 +260,7 @@ var CasparCGSocket = (function (_super) {
             this._parsedResponse = null;
         }
         else {
-            this.fire(Events_1.CasparCGSocketResponseEvent.RESPONSE, new Events_1.CasparCGSocketResponseEvent(new AMCP.CasparCGSocketResponse(i)));
+            this.fire(Events_1.CasparCGSocketResponseEvent.RESPONSE, new Events_1.CasparCGSocketResponseEvent(new AMCP_1.AMCPUtil.CasparCGSocketResponse(i)));
         }
     };
     /**

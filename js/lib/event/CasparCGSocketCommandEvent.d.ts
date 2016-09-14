@@ -1,8 +1,8 @@
 import { Event as BaseEventNS } from "./BaseEvent";
 import { Command as CommandNS } from "../AbstractCommand";
 import IAMCPCommand = CommandNS.IAMCPCommand;
-import { AMCP as AMCPNS } from "../CasparCGSocket";
-import CasparCGSocketResponse = AMCPNS.CasparCGSocketResponse;
+import { AMCPUtil as AMCPUtilNS } from "../AMCP";
+import CasparCGSocketResponse = AMCPUtilNS.CasparCGSocketResponse;
 export declare namespace Event {
     /**
      *

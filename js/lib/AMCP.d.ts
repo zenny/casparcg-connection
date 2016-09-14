@@ -18,6 +18,22 @@ export declare namespace AMCPUtil {
      *
      */
     function deSerialize(cmd: IAMCPCommandVO, id: string): IAMCPCommand;
+    /**
+     *
+     */
+    class CasparCGSocketResponse {
+        statusCode: number;
+        responseString: string;
+        items: Array<string>;
+        /**
+         *
+         */
+        constructor(responseString: string);
+        /**
+         *
+         */
+        static evaluateStatusCode(responseString: string): number;
+    }
 }
 /**
  * Internal

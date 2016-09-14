@@ -215,7 +215,7 @@ var Validation;
                     return this._keyword;
                 }
             }
-            else if (typeof data === "object") {
+            else if (typeof data === "object" && data !== null) {
                 var objectCast = data;
                 if (!this._caseSensitive) {
                     for (var key_1 in objectCast) {
@@ -263,7 +263,7 @@ var Validation;
                     data = parseInt(arrayCast[index + 1], 10);
                 }
             }
-            else if (typeof data === "object") {
+            else if (typeof data === "object" && data !== null) {
                 var objectCast = data;
                 if (objectCast.hasOwnProperty(this._keyword)) {
                     (data = objectCast[this._keyword]);
@@ -475,7 +475,7 @@ var Validation;
         TemplateDataValidator.prototype.resolve = function (data, key) {
             var stringCast = data.toString();
             // data is object: serialize
-            if (typeof data === "object") {
+            if (typeof data === "object" && data !== null) {
                 stringCast = JSON.stringify(data);
             }
             /*	// data is string, try to de-serialize to validate as JSON

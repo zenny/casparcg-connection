@@ -1189,8 +1189,5 @@ var CasparCG = (function (_super) {
     return CasparCG;
 }(hap_1.EventEmitter));
 exports.CasparCG = CasparCG;
-var foo = new CasparCG({ host: "52.208.248.56", onConnected: function () {
-        foo.do(new AMCP_1.AMCP.LoadbgCommand({ channel: 1, layer: 0, clip: "amb", length: null }));
-    } });
 
 //# sourceMappingURL=maps/CasparCG.js.map

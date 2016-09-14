@@ -54,6 +54,31 @@ var AMCPUtil;
         return command;
     }
     AMCPUtil.deSerialize = deSerialize;
+    /**
+     *
+     */
+    var CasparCGSocketResponse = (function () {
+        /**
+         *
+         */
+        function CasparCGSocketResponse(responseString) {
+            this.items = new Array();
+            this.statusCode = CasparCGSocketResponse.evaluateStatusCode(responseString);
+            this.responseString = responseString;
+        }
+        /**
+         *
+         */
+        CasparCGSocketResponse.evaluateStatusCode = function (responseString) {
+            var code = parseInt(responseString.substr(0, 3), 10);
+            if (code !== NaN) {
+                return code;
+            }
+            return null;
+        };
+        return CasparCGSocketResponse;
+    }());
+    AMCPUtil.CasparCGSocketResponse = CasparCGSocketResponse;
 })(AMCPUtil = exports.AMCPUtil || (exports.AMCPUtil = {}));
 /**
  * Internal

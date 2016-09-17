@@ -1,3 +1,13 @@
+// AMCPUtilNS
+import {AMCPUtil as AMCPUtilNS} from "./AMCP";
+import CasparCGSocketResponse = AMCPUtilNS.CasparCGSocketResponse;
+// ResponseNS
+import {Response as ResponseNS} from "./ResponseSignature";
+import ResponseSignature = ResponseNS.ResponseSignature;
+import {Response as ResponseValidatorNS} from "./ResponseValidators";
+import IResponseValidator = ResponseValidatorNS.IResponseValidator;
+import {Response as ResponseParserNS} from "./ResponseParsers";
+import IResponseParser = ResponseParserNS.IResponseParser;
 // Param NS
 import {Param as ParamNS} from "./ParamSignature";
 import optional = ParamNS.Optional;
@@ -100,10 +110,14 @@ export namespace Command {
 	 */
 	export interface IAMCPCommand extends IAMCPCommandData {
 		validateParams(): boolean;
+		validateResponse(response: CasparCGSocketResponse): boolean;
 		serialize(): IAMCPCommandVO;
 		populate(cmdVo: IAMCPCommandVO, id: string): void;
-		protocol: Array<IParamSignature>;
+		paramProtocol: Array<IParamSignature>;
 		protocolLogic: Array<IProtocolLogic>;
+		responseProtocol: ResponseSignature;
+		resolve?: any;
+		reject?: any;
 		onStatusChanged: ICommandStatusCallback;
 	}
 
@@ -125,7 +139,8 @@ export namespace Command {
 	 */
 	export abstract class AbstractCommand implements IAMCPCommand {
 		response: IAMCPResponse = new AMCPResponse();
-		protocol: Array<IParamSignature>;
+		paramProtocol: Array<IParamSignature>;
+		responseProtocol: ResponseSignature = new ResponseSignature();
 		onStatusChanged: ICommandStatusCallback;
 		private _status: IAMCPStatus = IAMCPStatus.New;
 		protected _channel: number;
@@ -184,8 +199,8 @@ export namespace Command {
 		 * 
 		 */
 		public validateParams(): boolean {
-			let required: Array<IParamSignature> = this.protocol ? this.protocol.filter(signature => signature.required.valueOf() === true) : [];
-			let optional: Array<IParamSignature> = this.protocol ? this.protocol.filter(signature => signature.required.valueOf() === false) : [];
+			let required: Array<IParamSignature> = this.paramProtocol ? this.paramProtocol.filter(signature => signature.required.valueOf() === true) : [];
+			let optional: Array<IParamSignature> = this.paramProtocol ? this.paramProtocol.filter(signature => signature.required.valueOf() === false) : [];
 
 			// check all required
 			for (let signature of required){
@@ -203,8 +218,8 @@ export namespace Command {
 				return false;
 			}
 
-			let validParams: Array<IParamSignature> = this.protocol ? this.protocol.filter((param) => param.resolved && param.payload !== null) : [];
-			let invalidParams: Array<IParamSignature> = this.protocol ? this.protocol.filter((param) => param.resolved && param.payload === null && param.required.valueOf() === true) : [];
+			let validParams: Array<IParamSignature> = this.paramProtocol ? this.paramProtocol.filter((param) => param.resolved && param.payload !== null) : [];
+			let invalidParams: Array<IParamSignature> = this.paramProtocol ? this.paramProtocol.filter((param) => param.resolved && param.payload === null && param.required.valueOf() === true) : [];
 
 			if (invalidParams.length > 0) {
 				return false;
@@ -265,12 +280,43 @@ export namespace Command {
 
 			let result: Array<IParamSignature>;
 			for (let rule of this.protocolLogic){
-				if ((result = rule.resolve(this.protocol)) !== null) {
-					this.protocol = result;
+				if ((result = rule.resolve(this.paramProtocol)) !== null) {
+					this.paramProtocol = result;
 				}else {
 					return false;
 				}
 			}
+			return true;
+		}
+
+		/**
+		 * 
+		 */
+		public validateResponse(response: CasparCGSocketResponse): boolean {
+			// code is correct
+			if (response.statusCode !== this.responseProtocol.code) {
+				// @todo: fallbacks? multiple valid codes?
+				return false;
+			}
+			// data is valid
+			let validData: Object;
+			if (this.responseProtocol.validator) { // @todo: typechecking ("class that implements....")
+				let validator: IResponseValidator = Object.create(this.responseProtocol.validator["prototype"]);
+				if ((validData = validator.resolve(response)) === false) {
+					return false;
+				}
+			}
+
+			// data gets parsed
+			if (this.responseProtocol.parser && validData) { // @todo: typechecking ("class that implements....")
+				let parser: IResponseParser = Object.create(this.responseProtocol.parser["prototype"]);
+				if ((validData = parser.parse(validData)) === false) {
+					return false;
+				}
+			}
+			this.response.raw = response.responseString;
+			this.response.code = response.statusCode;
+			this.response.data = validData;
 			return true;
 		}
 

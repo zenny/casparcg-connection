@@ -1,4 +1,33 @@
 import {Enum} from "./ServerStateEnum";
+// ResponseNS
+import {Response as ResponseNS} from "./ResponseSignature";
+import {Response as ResponseValidatorNS} from "./ResponseValidators";
+import XMLValidator = ResponseValidatorNS.XMLValidator;
+import ListValidator = ResponseValidatorNS.ListValidator;
+import DataValidator = ResponseValidatorNS.DataValidator;
+import Base64Validator = ResponseValidatorNS.Base64Validator;
+import SomeThingValidator = ResponseValidatorNS.SomeThingValidator;
+import {Response as ResponseParserNS} from "./ResponseParsers";
+import ChannelParser = ResponseParserNS.ChannelParser;
+import ConfigParser = ResponseParserNS.ConfigParser;
+import HelpParser = ResponseParserNS.HelpParser;
+import GLParser = ResponseParserNS.GLParser;
+import InfoDelayParser = ResponseParserNS.InfoDelayParser;
+import InfoParser = ResponseParserNS.InfoParser;
+import InfoThreadsParser = ResponseParserNS.InfoThreadsParser;
+import InfoQueuesParser = ResponseParserNS.InfoQueuesParser;
+import InfoServerParser = ResponseParserNS.InfoServerParser;
+import InfoSystemParser = ResponseParserNS.InfoSystemParser;
+import InfoPathsParser = ResponseParserNS.InfoPathsParser;
+import InfoTemplateParser = ResponseParserNS.InfoTemplateParser;
+import VersionParser = ResponseParserNS.VersionParser;
+import PathParser = ResponseParserNS.PathParser;
+import CinfParser = ResponseParserNS.CinfParser;
+import DataParser = ResponseParserNS.DataParser;
+import DataListParser = ResponseParserNS.DataListParser;
+import ThumbnailParser = ResponseParserNS.ThumbnailParser;
+
+import ResponseSignature = ResponseNS.ResponseSignature;
 // Command NS
 import {Command as CommandNS} from "./AbstractCommand";
 import IAMCPCommand = CommandNS.IAMCPCommand;
@@ -96,7 +125,7 @@ export namespace AMCPUtil {
 export namespace AMCP {
 	export class CustomCommand extends AbstractCommand {
 		static commandString = "";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "command", null, new StringValidator(false))
 		);
 	}
@@ -111,7 +140,7 @@ export namespace AMCP {
 	 */
 	export class LoadbgCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "LOADBG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "clip", null, ClipNameValidator),
 			new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")),
 			new ParamSignature(optional, "transition", null, new EnumValidator(Enum.Transition)),
@@ -135,7 +164,7 @@ export namespace AMCP {
 	 */
 	export class LoadCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "LOAD";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "clip", null, ClipNameValidator),
 			new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")),
 			new ParamSignature(optional, "transition", null, new EnumValidator(Enum.Transition)),
@@ -159,7 +188,7 @@ export namespace AMCP {
 	 */
 	export class PlayCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "PLAY";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(optional, "clip", null, ClipNameValidator),
 			new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")),
 			new ParamSignature(optional, "transition", null, new EnumValidator(Enum.Transition)),
@@ -219,7 +248,7 @@ export namespace AMCP {
 	 */
 	export class CGAddCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "flashLayer", "ADD", new PositiveNumberValidatorBetween(0)),
 			new ParamSignature(required, "templateName", null, new TemplateNameValidator()),
 			new ParamSignature(required, "playOnLoad", null, new BooleanValidatorWithDefaults(1, 0)),
@@ -232,7 +261,7 @@ export namespace AMCP {
 	 */
 	export class CGPlayCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "flashLayer", "PLAY", new PositiveNumberValidatorBetween(0))
 		);
 	}
@@ -242,7 +271,7 @@ export namespace AMCP {
 	 */
 	export class CGStopCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "flashLayer", "STOP", new PositiveNumberValidatorBetween(0))
 		);
 	}
@@ -252,7 +281,7 @@ export namespace AMCP {
 	 */
 	export class CGNextCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "flashLayer", "NEXT", new PositiveNumberValidatorBetween(0))
 		);
 	}
@@ -262,7 +291,7 @@ export namespace AMCP {
 	 */
 	export class CGRemoveCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "flashLayer", "REMOVE", new PositiveNumberValidatorBetween(0))
 		);
 	}
@@ -279,26 +308,28 @@ export namespace AMCP {
 	 */
 	export class CGUpdateCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "flashLayer", "UPDATE", new PositiveNumberValidatorBetween(0)),
 			new ParamSignature(required, "data", null, new TemplateDataValidator())
 		);
 	}
 
 	/**
-	 * 
+	 * @todo: 201 response code, parsing???????
 	 */
 	export class CGInvokeCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "flashLayer", "INVOKE", new PositiveNumberValidatorBetween(0)),
 			new ParamSignature(required, "method", null, new StringValidator())
 		);
+		responseProtocol = new ResponseSignature(201);
 	}
 }
 
 /**
  * IMixer
+ * @todo: switch 201/202 based on mode
  */
 export namespace AMCP {
 	/**
@@ -306,7 +337,7 @@ export namespace AMCP {
 	 */
 	export class MixerKeyerCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("KEYER")),
 			new ParamSignature(optional, "keyer", null, new BooleanValidatorWithDefaults(1, 0)),
 			new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER"))
@@ -329,7 +360,7 @@ export namespace AMCP {
 	 */
 	export class MixerChromaCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("CHROMA")),
 			new ParamSignature(optional, "keyer", null, new EnumValidator(Enum.Chroma)),
 			new ParamSignature(optional, "threshold", null, new NumberValidator()),
@@ -362,7 +393,7 @@ export namespace AMCP {
 	 */
 	export class MixerBlendCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("BLEND")),
 			new ParamSignature(optional, "blendmode", null, new EnumValidator(Enum.BlendMode)),
 			new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER"))
@@ -385,7 +416,7 @@ export namespace AMCP {
 	 */
 	export class MixerOpacityCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("OPACITY")),
 			new ParamSignature(optional, "opacity", null, new PositiveNumberValidatorBetween(0, 1)),
 			new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)),
@@ -412,7 +443,7 @@ export namespace AMCP {
 	 */
 	export class MixerBrightnessCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("BRIGHTNESS")),
 			new ParamSignature(optional, "brightness", null, new PositiveNumberValidatorBetween(0, 1)),
 			new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)),
@@ -439,7 +470,7 @@ export namespace AMCP {
 	 */
 	export class MixerSaturationCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("SATURATION")),
 			new ParamSignature(optional, "saturation", null, new PositiveNumberValidatorBetween(0, 1)),
 			new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)),
@@ -466,7 +497,7 @@ export namespace AMCP {
 	 */
 	export class MixerContrastCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("CONTRAST")),
 			new ParamSignature(optional, "contrast", null, new PositiveNumberValidatorBetween(0, 1)),
 			new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)),
@@ -493,7 +524,7 @@ export namespace AMCP {
 	 */
 	export class MixerLevelsCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("LEVELS")),
 			new ParamSignature(optional, "minInput", null, new PositiveNumberValidatorBetween(0, 1)),
 			new ParamSignature(optional, "maxInput", null, new PositiveNumberValidatorBetween(0, 1)),
@@ -525,7 +556,7 @@ export namespace AMCP {
 	 */
 	export class MixerFillCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("FILL")),
 			new ParamSignature(optional, "x", null, new NumberValidator()),
 			new ParamSignature(optional, "y", null, new NumberValidator()),
@@ -556,7 +587,7 @@ export namespace AMCP {
 	 */
 	export class MixerClipCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("CLIP")),
 			new ParamSignature(optional, "x", null, new NumberValidator()),
 			new ParamSignature(optional, "y", null, new NumberValidator()),
@@ -587,7 +618,7 @@ export namespace AMCP {
 	 */
 	export class MixerAnchorCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("ANCHOR")),
 			new ParamSignature(optional, "x", null, new NumberValidator()),
 			new ParamSignature(optional, "y", null, new NumberValidator()),
@@ -616,7 +647,7 @@ export namespace AMCP {
 	 */
 	export class MixerCropCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("CROP")),
 			new ParamSignature(optional, "left", null, new PositiveNumberValidatorBetween(0, 1)),
 			new ParamSignature(optional, "top", null, new PositiveNumberValidatorBetween(0, 1)),
@@ -647,7 +678,7 @@ export namespace AMCP {
 	 */
 	export class MixerRotationCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("ROTATION")),
 			new ParamSignature(optional, "rotation", null, new NumberValidator()),
 			new ParamSignature(optional, "transitionDuration", null, new NumberValidator()),
@@ -674,7 +705,7 @@ export namespace AMCP {
 	 */
 	export class MixerPerspectiveCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("PERSPECTIVE")),
 			new ParamSignature(optional, "topLeftX", null, new NumberValidator()),
 			new ParamSignature(optional, "topLeftY", null, new NumberValidator()),
@@ -709,7 +740,7 @@ export namespace AMCP {
 	 */
 	export class MixerMipmapCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("MIPMAP")),
 			new ParamSignature(optional, "mipmap", null, new BooleanValidatorWithDefaults(1, 0)),
 			new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER"))
@@ -732,7 +763,7 @@ export namespace AMCP {
 	 */
 	export class MixerVolumeCommand extends AbstractLayerWithFallbackCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("VOLUME")),
 			new ParamSignature(optional, "volume", null, new PositiveNumberValidatorBetween(0)),
 			new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)),
@@ -759,7 +790,7 @@ export namespace AMCP {
 	 */
 	export class MixerMastervolumeCommand extends AbstractChannelOrLayerCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("MASTERVOLUME")),
 			new ParamSignature(optional, "mastervolume", null, new PositiveNumberValidatorBetween(0)),
 			new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER"))
@@ -784,7 +815,7 @@ export namespace AMCP {
 	 */
 	export class MixerStraightAlphaOutputCommand extends AbstractChannelCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("STRAIGHT_ALPHA_OUTPUT")),
 			new ParamSignature(optional, "straight_alpha_output", null, new BooleanValidatorWithDefaults(1, 0)),
 			new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER"))
@@ -807,7 +838,7 @@ export namespace AMCP {
 	 */
 	export class MixerGridCommand extends AbstractChannelCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("GRID")),
 			new ParamSignature(optional, "resolution", null, new PositiveNumberRoundValidatorBetween(1)),
 			new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)),
@@ -829,7 +860,7 @@ export namespace AMCP {
 	 */
 	export class MixerCommitCommand extends AbstractChannelCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("COMMIT"))
 		);
 
@@ -847,7 +878,7 @@ export namespace AMCP {
 	 */
 	export class MixerClearCommand extends AbstractChannelOrLayerCommand {
 		static commandString = "MIXER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "keyword", null, new KeywordValidator("CLEAR"))
 		);
 
@@ -929,7 +960,7 @@ export namespace AMCP {
 	 */
 	export class LockCommand extends AbstractChannelCommand {
 		static commandString = "LOCK";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "action", null, new EnumValidator(Enum.Lock)),
 			new ParamSignature(optional, "phrase", null, new StringValidator())
 		);
@@ -962,7 +993,7 @@ export namespace AMCP {
 	 */
 	export class DataStoreCommand extends AbstractCommand {
 		static commandString = "DATA STORE";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "fileName", null, new DataNameValidator()),
 			new ParamSignature(required, "data", null, new TemplateDataValidator())
 		);
@@ -973,9 +1004,10 @@ export namespace AMCP {
 	 */
 	export class DataRetrieveCommand extends AbstractCommand {
 		static commandString = "DATA RETRIEVE";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "fileName", null, new DataNameValidator())
 		);
+		responseProtocol = new ResponseSignature(201, DataValidator, DataParser);
 	}
 
 	/**
@@ -983,6 +1015,7 @@ export namespace AMCP {
 	 */
 	export class DataListCommand extends AbstractCommand {
 		static commandString = "DATA LIST";
+		responseProtocol = new ResponseSignature(200, ListValidator, DataListParser);
 	}
 
 	/**
@@ -990,7 +1023,7 @@ export namespace AMCP {
 	 */
 	export class DataRemoveCommand extends AbstractCommand {
 		static commandString = "DATA REMOVE";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "fileName", null, new DataNameValidator())
 		);
 	}
@@ -1005,6 +1038,7 @@ export namespace AMCP {
 	 */
 	export class ThumbnailListCommand extends AbstractCommand {
 		static commandString = "THUMBNAIL LIST";
+		responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
 	}
 
 	/**
@@ -1012,9 +1046,10 @@ export namespace AMCP {
 	 */
 	export class ThumbnailRetrieveCommand extends AbstractCommand {
 		static commandString = "THUMBNAIL RETRIEVE";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "fileName", null, new ClipNameValidator())
 		);
+		responseProtocol = new ResponseSignature(201, Base64Validator, ThumbnailParser);
 	}
 
 	/**
@@ -1022,7 +1057,7 @@ export namespace AMCP {
 	 */
 	export class ThumbnailGenerateCommand extends AbstractCommand {
 		static commandString = "THUMBNAIL GENERATE";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "fileName", null, new ClipNameValidator())
 		);
 	}
@@ -1044,9 +1079,10 @@ export namespace AMCP {
 	 */
 	export class CinfCommand extends AbstractCommand {
 		static commandString = "CINF";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "fileName", null, new ClipNameValidator())
 		);
+		responseProtocol = new ResponseSignature(200, ListValidator, CinfParser);
 	}
 
 	/**
@@ -1054,6 +1090,7 @@ export namespace AMCP {
 	 */
 	export class ClsCommand extends AbstractCommand {
 		static commandString = "CLS";
+		responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
 	}
 
 	/**
@@ -1061,6 +1098,7 @@ export namespace AMCP {
 	 */
 	export class FlsCommand extends AbstractCommand {
 		static commandString = "FLS";
+		responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
 	}
 
 	/**
@@ -1068,6 +1106,7 @@ export namespace AMCP {
 	 */
 	export class TlsCommand extends AbstractCommand {
 		static commandString = "TLS";
+		responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
 	}
 
 	/**
@@ -1075,9 +1114,10 @@ export namespace AMCP {
 	 */
 	export class VersionCommand extends AbstractCommand {
 		static commandString = "VERSION";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(optional, "component", null, new EnumValidator(Enum.Version))
 		);
+		responseProtocol = new ResponseSignature(200, SomeThingValidator, VersionParser);
 	}
 
 	/**
@@ -1085,6 +1125,7 @@ export namespace AMCP {
 	 */
 	export class InfoCommand extends AbstractOrChannelOrLayerCommand {
 		static commandString = "INFO";
+		responseProtocol = new ResponseSignature(200, ListValidator, ChannelParser);
 	}
 
 	/**
@@ -1092,9 +1133,10 @@ export namespace AMCP {
 	 */
 	export class InfoTemplateCommand extends AbstractCommand {
 		static commandString = "INFO TEMPLATE";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "template", null, new TemplateNameValidator())
 		);
+		responseProtocol = new ResponseSignature(201, XMLValidator, InfoTemplateParser);
 	}
 
 	/**
@@ -1102,6 +1144,7 @@ export namespace AMCP {
 	 */
 	export class InfoConfigCommand extends AbstractCommand {
 		static commandString = "INFO CONFIG";
+		responseProtocol = new ResponseSignature(201, XMLValidator, ConfigParser);
 	}
 
 	/**
@@ -1109,6 +1152,7 @@ export namespace AMCP {
 	 */
 	export class InfoPathsCommand extends AbstractCommand {
 		static commandString = "INFO PATHS";
+		responseProtocol = new ResponseSignature(201, XMLValidator, InfoPathsParser);
 	}
 
 	/**
@@ -1116,6 +1160,7 @@ export namespace AMCP {
 	 */
 	export class InfoSystemCommand extends AbstractCommand {
 		static commandString = "INFO SYSTEM";
+		responseProtocol = new ResponseSignature(201, XMLValidator, InfoSystemParser);
 	}
 
 	/**
@@ -1123,6 +1168,7 @@ export namespace AMCP {
 	 */
 	export class InfoServerCommand extends AbstractCommand {
 		static commandString = "INFO SERVER";
+		responseProtocol = new ResponseSignature(201, XMLValidator, InfoServerParser);
 	}
 
 	/**
@@ -1130,6 +1176,7 @@ export namespace AMCP {
 	 */
 	export class InfoQueuesCommand extends AbstractCommand {
 		static commandString = "INFO QUEUES";
+		responseProtocol = new ResponseSignature(201, XMLValidator, InfoQueuesParser);
 	}
 
 	/**
@@ -1137,6 +1184,7 @@ export namespace AMCP {
 	 */
 	export class InfoThreadsCommand extends AbstractCommand {
 		static commandString = "INFO THREADS";
+		responseProtocol = new ResponseSignature(200, ListValidator, InfoThreadsParser);
 	}
 
 	/**
@@ -1144,9 +1192,10 @@ export namespace AMCP {
 	 */
 	export class InfoDelayCommand extends AbstractChannelOrLayerCommand {
 		static commandString = "INFO";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "delay", null, new KeywordValidator("DELAY"))
 		);
+		responseProtocol = new ResponseSignature(201, XMLValidator, InfoDelayParser);
 
 		/**
 		 * 
@@ -1158,15 +1207,16 @@ export namespace AMCP {
 	}
 
 	/**
-	 * 
+	 * @todo: response validator/parser
 	 */
 	export class CGInfoCommand extends AbstractLayerWithCgFallbackCommand {
 		static commandString = "CG";
 
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(required, "info", null, new KeywordValidator("INFO")),
 			new ParamSignature(optional, "flashLayer", null, new PositiveNumberValidatorBetween(0))
 		);
+		responseProtocol = new ResponseSignature(201);
 
 		/**
 		 * 
@@ -1182,6 +1232,7 @@ export namespace AMCP {
 	 */
 	export class GlInfoCommand extends AbstractCommand {
 		static commandString = "GL INFO";
+		responseProtocol = new ResponseSignature(201, XMLValidator, GLParser);
 	}
 
 	/**
@@ -1189,7 +1240,7 @@ export namespace AMCP {
 	 */
 	export class LogLevelCommand extends AbstractCommand {
 		static commandString = "LOG LEVEL";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(optional, "level", null, new EnumValidator(Enum.LogLevel))
 		);
 	}
@@ -1199,7 +1250,7 @@ export namespace AMCP {
 	 */
 	export class LogCategoryCommand extends AbstractCommand {
 		static commandString = "LOG CATEGORY";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(optional, "calltrace", Enum.LogCategory.CALLTRACE.value, new BooleanValidatorWithDefaults(1, 0)),
 			new ParamSignature(optional, "communication", Enum.LogCategory.COMMUNICATION.value, new BooleanValidatorWithDefaults(1, 0))
 		);
@@ -1216,13 +1267,15 @@ export namespace AMCP {
 	}
 
 	/**
-	 * 
+	 * @todo: mixed mode!!!!
+	 * 202/201
 	 */
 	export class HelpCommand extends AbstractCommand {
 		static commandString = "HELP";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(optional, "command", null, new EnumValidator(Enum.Command))
 		);
+		responseProtocol = new ResponseSignature(200, ListValidator, HelpParser);
 	}
 
 	/**
@@ -1230,9 +1283,10 @@ export namespace AMCP {
 	 */
 	export class HelpProducerCommand extends AbstractCommand {
 		static commandString = "HELP PRODUCER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(optional, "producer", null, new EnumValidator(Enum.Producer))
 		);
+		responseProtocol = new ResponseSignature(200, ListValidator, HelpParser);
 	}
 
 	/**
@@ -1240,9 +1294,10 @@ export namespace AMCP {
 	 */
 	export class HelpConsumerCommand extends AbstractCommand {
 		static commandString = "HELP CONSUMER";
-		protocol = new Array<ParamSignature>(
+		paramProtocol = new Array<ParamSignature>(
 			new ParamSignature(optional, "consumer", null, new EnumValidator(Enum.Consumer))
 		);
+		responseProtocol = new ResponseSignature(200, ListValidator, HelpParser);
 	}
 }
 
@@ -1251,21 +1306,21 @@ export namespace AMCP {
  */
 export namespace AMCP {
 	/**
-	 * 
+	 * @todo: response
 	 */
 	export class ByeCommand extends AbstractCommand {
 		static commandString = "BYE";
 	}
 
 	/**
-	 * 
+	 * @todo: response
 	 */
 	export class KillCommand extends AbstractCommand {
 		static commandString = "KILL";
 	}
 
 	/**
-	 * 
+	 * @todo: response
 	 */
 	export class RestartCommand extends AbstractCommand {
 		static commandString = "RESTART";

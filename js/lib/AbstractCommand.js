@@ -4,6 +4,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+// ResponseNS
+var ResponseSignature_1 = require("./ResponseSignature");
+var ResponseSignature = ResponseSignature_1.Response.ResponseSignature;
 // Validation ND
 var ParamValidators_1 = require("./ParamValidators");
 var PositiveNumberValidatorBetween = ParamValidators_1.Validation.PositiveNumberRoundValidatorBetween;
@@ -73,6 +76,7 @@ var Command;
          */
         function AbstractCommand(params) {
             this.response = new AMCPResponse();
+            this.responseProtocol = new ResponseSignature();
             this._status = IAMCPStatus.New;
             this._payload = {};
             // parse params to objects
@@ -106,8 +110,8 @@ var Command;
          *
          */
         AbstractCommand.prototype.validateParams = function () {
-            var required = this.protocol ? this.protocol.filter(function (signature) { return signature.required.valueOf() === true; }) : [];
-            var optional = this.protocol ? this.protocol.filter(function (signature) { return signature.required.valueOf() === false; }) : [];
+            var required = this.paramProtocol ? this.paramProtocol.filter(function (signature) { return signature.required.valueOf() === true; }) : [];
+            var optional = this.paramProtocol ? this.paramProtocol.filter(function (signature) { return signature.required.valueOf() === false; }) : [];
             // check all required
             for (var _i = 0, required_1 = required; _i < required_1.length; _i++) {
                 var signature = required_1[_i];
@@ -123,8 +127,8 @@ var Command;
             if (!this.validateProtocolLogic()) {
                 return false;
             }
-            var validParams = this.protocol ? this.protocol.filter(function (param) { return param.resolved && param.payload !== null; }) : [];
-            var invalidParams = this.protocol ? this.protocol.filter(function (param) { return param.resolved && param.payload === null && param.required.valueOf() === true; }) : [];
+            var validParams = this.paramProtocol ? this.paramProtocol.filter(function (param) { return param.resolved && param.payload !== null; }) : [];
+            var invalidParams = this.paramProtocol ? this.paramProtocol.filter(function (param) { return param.resolved && param.payload === null && param.required.valueOf() === true; }) : [];
             if (invalidParams.length > 0) {
                 return false;
             }
@@ -180,13 +184,42 @@ var Command;
             var result;
             for (var _i = 0, _a = this.protocolLogic; _i < _a.length; _i++) {
                 var rule = _a[_i];
-                if ((result = rule.resolve(this.protocol)) !== null) {
-                    this.protocol = result;
+                if ((result = rule.resolve(this.paramProtocol)) !== null) {
+                    this.paramProtocol = result;
                 }
                 else {
                     return false;
                 }
             }
+            return true;
+        };
+        /**
+         *
+         */
+        AbstractCommand.prototype.validateResponse = function (response) {
+            // code is correct
+            if (response.statusCode !== this.responseProtocol.code) {
+                // @todo: fallbacks? multiple valid codes?
+                return false;
+            }
+            // data is valid
+            var validData;
+            if (this.responseProtocol.validator) {
+                var validator = Object.create(this.responseProtocol.validator["prototype"]);
+                if ((validData = validator.resolve(response)) === false) {
+                    return false;
+                }
+            }
+            // data gets parsed
+            if (this.responseProtocol.parser && validData) {
+                var parser = Object.create(this.responseProtocol.parser["prototype"]);
+                if ((validData = parser.parse(validData)) === false) {
+                    return false;
+                }
+            }
+            this.response.raw = response.responseString;
+            this.response.code = response.statusCode;
+            this.response.data = validData;
             return true;
         };
         Object.defineProperty(AbstractCommand.prototype, "payload", {

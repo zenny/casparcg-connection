@@ -241,26 +241,32 @@ var CasparCGSocket = (function (_super) {
         i = (i.length > 2 && i.slice(0, 2) === "\r\n") ? i.slice(2) : i;
         if (AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 200) {
             this._parsedResponse = new AMCP_1.AMCPUtil.CasparCGSocketResponse(i);
+            return;
         }
         else if (this._parsedResponse && this._parsedResponse.statusCode === 200) {
             if (i !== "\r\n") {
                 this._parsedResponse.items.push(i);
+                return;
             }
             else {
                 this.fire(Events_1.CasparCGSocketResponseEvent.RESPONSE, new Events_1.CasparCGSocketResponseEvent(this._parsedResponse));
                 this._parsedResponse = null;
+                return;
             }
         }
-        if (AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 201) {
+        if (AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 201 || AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 400 || AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 101) {
             this._parsedResponse = new AMCP_1.AMCPUtil.CasparCGSocketResponse(i);
+            return;
         }
-        else if (this._parsedResponse && this._parsedResponse.statusCode === 201) {
+        else if (this._parsedResponse && this._parsedResponse.statusCode === 201 || this._parsedResponse && this._parsedResponse.statusCode === 400 || this._parsedResponse && this._parsedResponse.statusCode === 101) {
             this._parsedResponse.items.push(i);
             this.fire(Events_1.CasparCGSocketResponseEvent.RESPONSE, new Events_1.CasparCGSocketResponseEvent(this._parsedResponse));
             this._parsedResponse = null;
+            return;
         }
         else {
             this.fire(Events_1.CasparCGSocketResponseEvent.RESPONSE, new Events_1.CasparCGSocketResponseEvent(new AMCP_1.AMCPUtil.CasparCGSocketResponse(i)));
+            return;
         }
     };
     /**

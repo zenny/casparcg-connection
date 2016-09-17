@@ -1,3 +1,7 @@
+import { AMCPUtil as AMCPUtilNS } from "./AMCP";
+import CasparCGSocketResponse = AMCPUtilNS.CasparCGSocketResponse;
+import { Response as ResponseNS } from "./ResponseSignature";
+import ResponseSignature = ResponseNS.ResponseSignature;
 import { Param as ParamNS } from "./ParamSignature";
 import PayloadVO = ParamNS.PayloadVO;
 import Param = ParamNS.Param;
@@ -66,10 +70,14 @@ export declare namespace Command {
      */
     interface IAMCPCommand extends IAMCPCommandData {
         validateParams(): boolean;
+        validateResponse(response: CasparCGSocketResponse): boolean;
         serialize(): IAMCPCommandVO;
         populate(cmdVo: IAMCPCommandVO, id: string): void;
-        protocol: Array<IParamSignature>;
+        paramProtocol: Array<IParamSignature>;
         protocolLogic: Array<IProtocolLogic>;
+        responseProtocol: ResponseSignature;
+        resolve?: any;
+        reject?: any;
         onStatusChanged: ICommandStatusCallback;
     }
     /**
@@ -81,7 +89,8 @@ export declare namespace Command {
      */
     abstract class AbstractCommand implements IAMCPCommand {
         response: IAMCPResponse;
-        protocol: Array<IParamSignature>;
+        paramProtocol: Array<IParamSignature>;
+        responseProtocol: ResponseSignature;
         onStatusChanged: ICommandStatusCallback;
         private _status;
         protected _channel: number;
@@ -106,6 +115,10 @@ export declare namespace Command {
          *
          */
         protected validateProtocolLogic(): boolean;
+        /**
+         *
+         */
+        validateResponse(response: CasparCGSocketResponse): boolean;
         /**
          *
          */

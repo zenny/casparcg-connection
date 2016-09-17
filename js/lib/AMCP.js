@@ -5,6 +5,33 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ServerStateEnum_1 = require("./ServerStateEnum");
+// ResponseNS
+var ResponseSignature_1 = require("./ResponseSignature");
+var ResponseValidators_1 = require("./ResponseValidators");
+var XMLValidator = ResponseValidators_1.Response.XMLValidator;
+var ListValidator = ResponseValidators_1.Response.ListValidator;
+var DataValidator = ResponseValidators_1.Response.DataValidator;
+var Base64Validator = ResponseValidators_1.Response.Base64Validator;
+var SomeThingValidator = ResponseValidators_1.Response.SomeThingValidator;
+var ResponseParsers_1 = require("./ResponseParsers");
+var ChannelParser = ResponseParsers_1.Response.ChannelParser;
+var ConfigParser = ResponseParsers_1.Response.ConfigParser;
+var HelpParser = ResponseParsers_1.Response.HelpParser;
+var GLParser = ResponseParsers_1.Response.GLParser;
+var InfoDelayParser = ResponseParsers_1.Response.InfoDelayParser;
+var InfoThreadsParser = ResponseParsers_1.Response.InfoThreadsParser;
+var InfoQueuesParser = ResponseParsers_1.Response.InfoQueuesParser;
+var InfoServerParser = ResponseParsers_1.Response.InfoServerParser;
+var InfoSystemParser = ResponseParsers_1.Response.InfoSystemParser;
+var InfoPathsParser = ResponseParsers_1.Response.InfoPathsParser;
+var InfoTemplateParser = ResponseParsers_1.Response.InfoTemplateParser;
+var VersionParser = ResponseParsers_1.Response.VersionParser;
+var PathParser = ResponseParsers_1.Response.PathParser;
+var CinfParser = ResponseParsers_1.Response.CinfParser;
+var DataParser = ResponseParsers_1.Response.DataParser;
+var DataListParser = ResponseParsers_1.Response.DataListParser;
+var ThumbnailParser = ResponseParsers_1.Response.ThumbnailParser;
+var ResponseSignature = ResponseSignature_1.Response.ResponseSignature;
 // Command NS
 var AbstractCommand_1 = require("./AbstractCommand");
 var AbstractCommand = AbstractCommand_1.Command.AbstractCommand;
@@ -89,7 +116,7 @@ var AMCP;
         __extends(CustomCommand, _super);
         function CustomCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "command", null, new StringValidator(false)));
+            this.paramProtocol = new Array(new ParamSignature(required, "command", null, new StringValidator(false)));
         }
         CustomCommand.commandString = "";
         return CustomCommand;
@@ -108,7 +135,7 @@ var AMCP;
         __extends(LoadbgCommand, _super);
         function LoadbgCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "clip", null, ClipNameValidator), new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")), new ParamSignature(optional, "transition", null, new EnumValidator(ServerStateEnum_1.Enum.Transition)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "transitionDirection", null, new EnumValidator(ServerStateEnum_1.Enum.Direction)), new ParamSignature(optional, "seek", "SEEK", new FrameValidator("SEEK")), new ParamSignature(optional, "length", "LENGTH", new FrameValidator("LENGTH")), new ParamSignature(optional, "filter", "FILTER", new StringValidator()), new ParamSignature(optional, "auto", null, new BooleanValidatorWithDefaults("AUTO")));
+            this.paramProtocol = new Array(new ParamSignature(required, "clip", null, ClipNameValidator), new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")), new ParamSignature(optional, "transition", null, new EnumValidator(ServerStateEnum_1.Enum.Transition)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "transitionDirection", null, new EnumValidator(ServerStateEnum_1.Enum.Direction)), new ParamSignature(optional, "seek", "SEEK", new FrameValidator("SEEK")), new ParamSignature(optional, "length", "LENGTH", new FrameValidator("LENGTH")), new ParamSignature(optional, "filter", "FILTER", new StringValidator()), new ParamSignature(optional, "auto", null, new BooleanValidatorWithDefaults("AUTO")));
         }
         LoadbgCommand.commandString = "LOADBG";
         LoadbgCommand.protocolLogic = new Array(new Depends("transitionDuration", "transition"), new Depends("transitionEasing", "transition"), new Depends("transitionDirection", "transition"));
@@ -122,7 +149,7 @@ var AMCP;
         __extends(LoadCommand, _super);
         function LoadCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "clip", null, ClipNameValidator), new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")), new ParamSignature(optional, "transition", null, new EnumValidator(ServerStateEnum_1.Enum.Transition)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "transitionDirection", null, new EnumValidator(ServerStateEnum_1.Enum.Direction)), new ParamSignature(optional, "seek", "SEEK", new FrameValidator("SEEK")), new ParamSignature(optional, "length", "LENGTH", new FrameValidator("LENGTH")), new ParamSignature(optional, "filter", "FILTER", new StringValidator()), new ParamSignature(optional, "auto", null, new BooleanValidatorWithDefaults("AUTO")));
+            this.paramProtocol = new Array(new ParamSignature(required, "clip", null, ClipNameValidator), new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")), new ParamSignature(optional, "transition", null, new EnumValidator(ServerStateEnum_1.Enum.Transition)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "transitionDirection", null, new EnumValidator(ServerStateEnum_1.Enum.Direction)), new ParamSignature(optional, "seek", "SEEK", new FrameValidator("SEEK")), new ParamSignature(optional, "length", "LENGTH", new FrameValidator("LENGTH")), new ParamSignature(optional, "filter", "FILTER", new StringValidator()), new ParamSignature(optional, "auto", null, new BooleanValidatorWithDefaults("AUTO")));
         }
         LoadCommand.commandString = "LOAD";
         LoadCommand.protocolLogic = new Array(new Depends("transitionDuration", "transition"), new Depends("transitionEasing", "transition"), new Depends("transitionDirection", "transition"));
@@ -136,7 +163,7 @@ var AMCP;
         __extends(PlayCommand, _super);
         function PlayCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(optional, "clip", null, ClipNameValidator), new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")), new ParamSignature(optional, "transition", null, new EnumValidator(ServerStateEnum_1.Enum.Transition)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "transitionDirection", null, new EnumValidator(ServerStateEnum_1.Enum.Direction)), new ParamSignature(optional, "seek", "SEEK", new FrameValidator("SEEK")), new ParamSignature(optional, "length", "LENGTH", new FrameValidator("LENGTH")), new ParamSignature(optional, "filter", "FILTER", new StringValidator()), new ParamSignature(optional, "auto", null, new BooleanValidatorWithDefaults("AUTO")));
+            this.paramProtocol = new Array(new ParamSignature(optional, "clip", null, ClipNameValidator), new ParamSignature(optional, "loop", null, new BooleanValidatorWithDefaults("LOOP")), new ParamSignature(optional, "transition", null, new EnumValidator(ServerStateEnum_1.Enum.Transition)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "transitionDirection", null, new EnumValidator(ServerStateEnum_1.Enum.Direction)), new ParamSignature(optional, "seek", "SEEK", new FrameValidator("SEEK")), new ParamSignature(optional, "length", "LENGTH", new FrameValidator("LENGTH")), new ParamSignature(optional, "filter", "FILTER", new StringValidator()), new ParamSignature(optional, "auto", null, new BooleanValidatorWithDefaults("AUTO")));
         }
         PlayCommand.commandString = "PLAY";
         PlayCommand.protocolLogic = new Array(new Depends("loop", "clip"), new Depends("seek", "clip"), new Depends("length", "clip"), new Depends("filter", "clip"), new Depends("auto", "clip"), new Depends("transition", "clip"), new Depends("transitionDuration", "clip"), new Depends("transitionEasing", "clip"), new Depends("transitionDirection", "clip"), new Depends("transitionDuration", "transition"), new Depends("transitionEasing", "transition"), new Depends("transitionDirection", "transition"));
@@ -192,7 +219,7 @@ var AMCP;
         __extends(CGAddCommand, _super);
         function CGAddCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "flashLayer", "ADD", new PositiveNumberValidatorBetween(0)), new ParamSignature(required, "templateName", null, new TemplateNameValidator()), new ParamSignature(required, "playOnLoad", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "data", null, new TemplateDataValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "flashLayer", "ADD", new PositiveNumberValidatorBetween(0)), new ParamSignature(required, "templateName", null, new TemplateNameValidator()), new ParamSignature(required, "playOnLoad", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "data", null, new TemplateDataValidator()));
         }
         CGAddCommand.commandString = "CG";
         return CGAddCommand;
@@ -205,7 +232,7 @@ var AMCP;
         __extends(CGPlayCommand, _super);
         function CGPlayCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "flashLayer", "PLAY", new PositiveNumberValidatorBetween(0)));
+            this.paramProtocol = new Array(new ParamSignature(required, "flashLayer", "PLAY", new PositiveNumberValidatorBetween(0)));
         }
         CGPlayCommand.commandString = "CG";
         return CGPlayCommand;
@@ -218,7 +245,7 @@ var AMCP;
         __extends(CGStopCommand, _super);
         function CGStopCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "flashLayer", "STOP", new PositiveNumberValidatorBetween(0)));
+            this.paramProtocol = new Array(new ParamSignature(required, "flashLayer", "STOP", new PositiveNumberValidatorBetween(0)));
         }
         CGStopCommand.commandString = "CG";
         return CGStopCommand;
@@ -231,7 +258,7 @@ var AMCP;
         __extends(CGNextCommand, _super);
         function CGNextCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "flashLayer", "NEXT", new PositiveNumberValidatorBetween(0)));
+            this.paramProtocol = new Array(new ParamSignature(required, "flashLayer", "NEXT", new PositiveNumberValidatorBetween(0)));
         }
         CGNextCommand.commandString = "CG";
         return CGNextCommand;
@@ -244,7 +271,7 @@ var AMCP;
         __extends(CGRemoveCommand, _super);
         function CGRemoveCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "flashLayer", "REMOVE", new PositiveNumberValidatorBetween(0)));
+            this.paramProtocol = new Array(new ParamSignature(required, "flashLayer", "REMOVE", new PositiveNumberValidatorBetween(0)));
         }
         CGRemoveCommand.commandString = "CG";
         return CGRemoveCommand;
@@ -269,20 +296,21 @@ var AMCP;
         __extends(CGUpdateCommand, _super);
         function CGUpdateCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "flashLayer", "UPDATE", new PositiveNumberValidatorBetween(0)), new ParamSignature(required, "data", null, new TemplateDataValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "flashLayer", "UPDATE", new PositiveNumberValidatorBetween(0)), new ParamSignature(required, "data", null, new TemplateDataValidator()));
         }
         CGUpdateCommand.commandString = "CG";
         return CGUpdateCommand;
     }(AbstractLayerWithCgFallbackCommand));
     AMCP.CGUpdateCommand = CGUpdateCommand;
     /**
-     *
+     * @todo: 201 response code, parsing???????
      */
     var CGInvokeCommand = (function (_super) {
         __extends(CGInvokeCommand, _super);
         function CGInvokeCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "flashLayer", "INVOKE", new PositiveNumberValidatorBetween(0)), new ParamSignature(required, "method", null, new StringValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "flashLayer", "INVOKE", new PositiveNumberValidatorBetween(0)), new ParamSignature(required, "method", null, new StringValidator()));
+            this.responseProtocol = new ResponseSignature(201);
         }
         CGInvokeCommand.commandString = "CG";
         return CGInvokeCommand;
@@ -291,6 +319,7 @@ var AMCP;
 })(AMCP = exports.AMCP || (exports.AMCP = {}));
 /**
  * IMixer
+ * @todo: switch 201/202 based on mode
  */
 var AMCP;
 (function (AMCP) {
@@ -304,7 +333,7 @@ var AMCP;
          */
         function MixerKeyerCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("KEYER")), new ParamSignature(optional, "keyer", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("KEYER")), new ParamSignature(optional, "keyer", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "KEYER";
         }
         MixerKeyerCommand.commandString = "MIXER";
@@ -322,7 +351,7 @@ var AMCP;
          */
         function MixerChromaCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CHROMA")), new ParamSignature(optional, "keyer", null, new EnumValidator(ServerStateEnum_1.Enum.Chroma)), new ParamSignature(optional, "threshold", null, new NumberValidator()), new ParamSignature(optional, "softness", null, new NumberValidator()), new ParamSignature(optional, "spill", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CHROMA")), new ParamSignature(optional, "keyer", null, new EnumValidator(ServerStateEnum_1.Enum.Chroma)), new ParamSignature(optional, "threshold", null, new NumberValidator()), new ParamSignature(optional, "softness", null, new NumberValidator()), new ParamSignature(optional, "spill", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "CHROMA";
         }
         MixerChromaCommand.commandString = "MIXER";
@@ -340,7 +369,7 @@ var AMCP;
          */
         function MixerBlendCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("BLEND")), new ParamSignature(optional, "blendmode", null, new EnumValidator(ServerStateEnum_1.Enum.BlendMode)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("BLEND")), new ParamSignature(optional, "blendmode", null, new EnumValidator(ServerStateEnum_1.Enum.BlendMode)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "BLEND";
         }
         MixerBlendCommand.commandString = "MIXER";
@@ -358,7 +387,7 @@ var AMCP;
          */
         function MixerOpacityCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("OPACITY")), new ParamSignature(optional, "opacity", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("OPACITY")), new ParamSignature(optional, "opacity", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "OPACITY";
         }
         MixerOpacityCommand.commandString = "MIXER";
@@ -376,7 +405,7 @@ var AMCP;
          */
         function MixerBrightnessCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("BRIGHTNESS")), new ParamSignature(optional, "brightness", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("BRIGHTNESS")), new ParamSignature(optional, "brightness", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "BRIGHTNESS";
         }
         MixerBrightnessCommand.commandString = "MIXER";
@@ -394,7 +423,7 @@ var AMCP;
          */
         function MixerSaturationCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("SATURATION")), new ParamSignature(optional, "saturation", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("SATURATION")), new ParamSignature(optional, "saturation", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "SATURATION";
         }
         MixerSaturationCommand.commandString = "MIXER";
@@ -412,7 +441,7 @@ var AMCP;
          */
         function MixerContrastCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CONTRAST")), new ParamSignature(optional, "contrast", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CONTRAST")), new ParamSignature(optional, "contrast", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "CONTRAST";
         }
         MixerContrastCommand.commandString = "MIXER";
@@ -430,7 +459,7 @@ var AMCP;
          */
         function MixerLevelsCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("LEVELS")), new ParamSignature(optional, "minInput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "maxInput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "gamma", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "minOutput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "maxOutput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("LEVELS")), new ParamSignature(optional, "minInput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "maxInput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "gamma", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "minOutput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "maxOutput", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "LEVELS";
         }
         MixerLevelsCommand.commandString = "MIXER";
@@ -448,7 +477,7 @@ var AMCP;
          */
         function MixerFillCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("FILL")), new ParamSignature(optional, "x", null, new NumberValidator()), new ParamSignature(optional, "y", null, new NumberValidator()), new ParamSignature(optional, "xScale", null, new NumberValidator()), new ParamSignature(optional, "yScale", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("FILL")), new ParamSignature(optional, "x", null, new NumberValidator()), new ParamSignature(optional, "y", null, new NumberValidator()), new ParamSignature(optional, "xScale", null, new NumberValidator()), new ParamSignature(optional, "yScale", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "FILL";
         }
         MixerFillCommand.commandString = "MIXER";
@@ -466,7 +495,7 @@ var AMCP;
          */
         function MixerClipCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CLIP")), new ParamSignature(optional, "x", null, new NumberValidator()), new ParamSignature(optional, "y", null, new NumberValidator()), new ParamSignature(optional, "width", null, new NumberValidator()), new ParamSignature(optional, "height", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CLIP")), new ParamSignature(optional, "x", null, new NumberValidator()), new ParamSignature(optional, "y", null, new NumberValidator()), new ParamSignature(optional, "width", null, new NumberValidator()), new ParamSignature(optional, "height", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "CLIP";
         }
         MixerClipCommand.commandString = "MIXER";
@@ -484,7 +513,7 @@ var AMCP;
          */
         function MixerAnchorCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("ANCHOR")), new ParamSignature(optional, "x", null, new NumberValidator()), new ParamSignature(optional, "y", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("ANCHOR")), new ParamSignature(optional, "x", null, new NumberValidator()), new ParamSignature(optional, "y", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "ANCHOR";
         }
         MixerAnchorCommand.commandString = "MIXER";
@@ -502,7 +531,7 @@ var AMCP;
          */
         function MixerCropCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CROP")), new ParamSignature(optional, "left", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "top", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "right", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "bottom", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CROP")), new ParamSignature(optional, "left", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "top", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "right", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "bottom", null, new PositiveNumberValidatorBetween(0, 1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "CROP";
         }
         MixerCropCommand.commandString = "MIXER";
@@ -520,7 +549,7 @@ var AMCP;
          */
         function MixerRotationCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("ROTATION")), new ParamSignature(optional, "rotation", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new NumberValidator()), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("ROTATION")), new ParamSignature(optional, "rotation", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new NumberValidator()), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "ROTATION";
         }
         MixerRotationCommand.commandString = "MIXER";
@@ -538,7 +567,7 @@ var AMCP;
          */
         function MixerPerspectiveCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("PERSPECTIVE")), new ParamSignature(optional, "topLeftX", null, new NumberValidator()), new ParamSignature(optional, "topLeftY", null, new NumberValidator()), new ParamSignature(optional, "topRightX", null, new NumberValidator()), new ParamSignature(optional, "topRightY", null, new NumberValidator()), new ParamSignature(optional, "bottomRightX", null, new NumberValidator()), new ParamSignature(optional, "bottomRightY", null, new NumberValidator()), new ParamSignature(optional, "bottomLeftX", null, new NumberValidator()), new ParamSignature(optional, "bottomLeftY", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new NumberValidator()), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("PERSPECTIVE")), new ParamSignature(optional, "topLeftX", null, new NumberValidator()), new ParamSignature(optional, "topLeftY", null, new NumberValidator()), new ParamSignature(optional, "topRightX", null, new NumberValidator()), new ParamSignature(optional, "topRightY", null, new NumberValidator()), new ParamSignature(optional, "bottomRightX", null, new NumberValidator()), new ParamSignature(optional, "bottomRightY", null, new NumberValidator()), new ParamSignature(optional, "bottomLeftX", null, new NumberValidator()), new ParamSignature(optional, "bottomLeftY", null, new NumberValidator()), new ParamSignature(optional, "transitionDuration", null, new NumberValidator()), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "PERSPECTIVE";
         }
         MixerPerspectiveCommand.commandString = "MIXER";
@@ -556,7 +585,7 @@ var AMCP;
          */
         function MixerMipmapCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("MIPMAP")), new ParamSignature(optional, "mipmap", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("MIPMAP")), new ParamSignature(optional, "mipmap", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "MIPMAP";
         }
         MixerMipmapCommand.commandString = "MIXER";
@@ -574,7 +603,7 @@ var AMCP;
          */
         function MixerVolumeCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("VOLUME")), new ParamSignature(optional, "volume", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("VOLUME")), new ParamSignature(optional, "volume", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "VOLUME";
         }
         MixerVolumeCommand.commandString = "MIXER";
@@ -592,7 +621,7 @@ var AMCP;
          */
         function MixerMastervolumeCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("MASTERVOLUME")), new ParamSignature(optional, "mastervolume", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("MASTERVOLUME")), new ParamSignature(optional, "mastervolume", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "MASTERVOLUME";
         }
         MixerMastervolumeCommand.commandString = "MIXER";
@@ -610,7 +639,7 @@ var AMCP;
          */
         function MixerStraightAlphaOutputCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("STRAIGHT_ALPHA_OUTPUT")), new ParamSignature(optional, "straight_alpha_output", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("STRAIGHT_ALPHA_OUTPUT")), new ParamSignature(optional, "straight_alpha_output", null, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "STRAIGHT_ALPHA_OUTPUT";
         }
         MixerStraightAlphaOutputCommand.commandString = "MIXER";
@@ -628,7 +657,7 @@ var AMCP;
          */
         function MixerGridCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("GRID")), new ParamSignature(optional, "resolution", null, new PositiveNumberRoundValidatorBetween(1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("GRID")), new ParamSignature(optional, "resolution", null, new PositiveNumberRoundValidatorBetween(1)), new ParamSignature(optional, "transitionDuration", null, new PositiveNumberValidatorBetween(0)), new ParamSignature(optional, "transitionEasing", null, new EnumValidator(ServerStateEnum_1.Enum.Ease)), new ParamSignature(optional, "defer", null, new BooleanValidatorWithDefaults("DEFER")));
             this._objectParams["keyword"] = "GRID";
         }
         MixerGridCommand.commandString = "MIXER";
@@ -645,7 +674,7 @@ var AMCP;
          */
         function MixerCommitCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("COMMIT")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("COMMIT")));
             this._objectParams["keyword"] = "COMMIT";
         }
         MixerCommitCommand.commandString = "MIXER";
@@ -662,7 +691,7 @@ var AMCP;
          */
         function MixerClearCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CLEAR")));
+            this.paramProtocol = new Array(new ParamSignature(required, "keyword", null, new KeywordValidator("CLEAR")));
             this._objectParams["keyword"] = "CLEAR";
         }
         MixerClearCommand.commandString = "MIXER";
@@ -771,7 +800,7 @@ var AMCP;
         __extends(LockCommand, _super);
         function LockCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "action", null, new EnumValidator(ServerStateEnum_1.Enum.Lock)), new ParamSignature(optional, "phrase", null, new StringValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "action", null, new EnumValidator(ServerStateEnum_1.Enum.Lock)), new ParamSignature(optional, "phrase", null, new StringValidator()));
         }
         LockCommand.commandString = "LOCK";
         LockCommand.protocolLogic = new Array(new Depends("action", "phrase").ifNot("action", ServerStateEnum_1.Enum.Lock.RELEASE));
@@ -815,7 +844,7 @@ var AMCP;
         __extends(DataStoreCommand, _super);
         function DataStoreCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "fileName", null, new DataNameValidator()), new ParamSignature(required, "data", null, new TemplateDataValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "fileName", null, new DataNameValidator()), new ParamSignature(required, "data", null, new TemplateDataValidator()));
         }
         DataStoreCommand.commandString = "DATA STORE";
         return DataStoreCommand;
@@ -828,7 +857,8 @@ var AMCP;
         __extends(DataRetrieveCommand, _super);
         function DataRetrieveCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "fileName", null, new DataNameValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "fileName", null, new DataNameValidator()));
+            this.responseProtocol = new ResponseSignature(201, DataValidator, DataParser);
         }
         DataRetrieveCommand.commandString = "DATA RETRIEVE";
         return DataRetrieveCommand;
@@ -841,6 +871,7 @@ var AMCP;
         __extends(DataListCommand, _super);
         function DataListCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(200, ListValidator, DataListParser);
         }
         DataListCommand.commandString = "DATA LIST";
         return DataListCommand;
@@ -853,7 +884,7 @@ var AMCP;
         __extends(DataRemoveCommand, _super);
         function DataRemoveCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "fileName", null, new DataNameValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "fileName", null, new DataNameValidator()));
         }
         DataRemoveCommand.commandString = "DATA REMOVE";
         return DataRemoveCommand;
@@ -872,6 +903,7 @@ var AMCP;
         __extends(ThumbnailListCommand, _super);
         function ThumbnailListCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
         }
         ThumbnailListCommand.commandString = "THUMBNAIL LIST";
         return ThumbnailListCommand;
@@ -884,7 +916,8 @@ var AMCP;
         __extends(ThumbnailRetrieveCommand, _super);
         function ThumbnailRetrieveCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "fileName", null, new ClipNameValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "fileName", null, new ClipNameValidator()));
+            this.responseProtocol = new ResponseSignature(201, Base64Validator, ThumbnailParser);
         }
         ThumbnailRetrieveCommand.commandString = "THUMBNAIL RETRIEVE";
         return ThumbnailRetrieveCommand;
@@ -897,7 +930,7 @@ var AMCP;
         __extends(ThumbnailGenerateCommand, _super);
         function ThumbnailGenerateCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "fileName", null, new ClipNameValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "fileName", null, new ClipNameValidator()));
         }
         ThumbnailGenerateCommand.commandString = "THUMBNAIL GENERATE";
         return ThumbnailGenerateCommand;
@@ -928,7 +961,8 @@ var AMCP;
         __extends(CinfCommand, _super);
         function CinfCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "fileName", null, new ClipNameValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "fileName", null, new ClipNameValidator()));
+            this.responseProtocol = new ResponseSignature(200, ListValidator, CinfParser);
         }
         CinfCommand.commandString = "CINF";
         return CinfCommand;
@@ -941,6 +975,7 @@ var AMCP;
         __extends(ClsCommand, _super);
         function ClsCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
         }
         ClsCommand.commandString = "CLS";
         return ClsCommand;
@@ -953,6 +988,7 @@ var AMCP;
         __extends(FlsCommand, _super);
         function FlsCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
         }
         FlsCommand.commandString = "FLS";
         return FlsCommand;
@@ -965,6 +1001,7 @@ var AMCP;
         __extends(TlsCommand, _super);
         function TlsCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(200, ListValidator, PathParser);
         }
         TlsCommand.commandString = "TLS";
         return TlsCommand;
@@ -977,7 +1014,8 @@ var AMCP;
         __extends(VersionCommand, _super);
         function VersionCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(optional, "component", null, new EnumValidator(ServerStateEnum_1.Enum.Version)));
+            this.paramProtocol = new Array(new ParamSignature(optional, "component", null, new EnumValidator(ServerStateEnum_1.Enum.Version)));
+            this.responseProtocol = new ResponseSignature(200, SomeThingValidator, VersionParser);
         }
         VersionCommand.commandString = "VERSION";
         return VersionCommand;
@@ -990,6 +1028,7 @@ var AMCP;
         __extends(InfoCommand, _super);
         function InfoCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(200, ListValidator, ChannelParser);
         }
         InfoCommand.commandString = "INFO";
         return InfoCommand;
@@ -1002,7 +1041,8 @@ var AMCP;
         __extends(InfoTemplateCommand, _super);
         function InfoTemplateCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(required, "template", null, new TemplateNameValidator()));
+            this.paramProtocol = new Array(new ParamSignature(required, "template", null, new TemplateNameValidator()));
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, InfoTemplateParser);
         }
         InfoTemplateCommand.commandString = "INFO TEMPLATE";
         return InfoTemplateCommand;
@@ -1015,6 +1055,7 @@ var AMCP;
         __extends(InfoConfigCommand, _super);
         function InfoConfigCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, ConfigParser);
         }
         InfoConfigCommand.commandString = "INFO CONFIG";
         return InfoConfigCommand;
@@ -1027,6 +1068,7 @@ var AMCP;
         __extends(InfoPathsCommand, _super);
         function InfoPathsCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, InfoPathsParser);
         }
         InfoPathsCommand.commandString = "INFO PATHS";
         return InfoPathsCommand;
@@ -1039,6 +1081,7 @@ var AMCP;
         __extends(InfoSystemCommand, _super);
         function InfoSystemCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, InfoSystemParser);
         }
         InfoSystemCommand.commandString = "INFO SYSTEM";
         return InfoSystemCommand;
@@ -1051,6 +1094,7 @@ var AMCP;
         __extends(InfoServerCommand, _super);
         function InfoServerCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, InfoServerParser);
         }
         InfoServerCommand.commandString = "INFO SERVER";
         return InfoServerCommand;
@@ -1063,6 +1107,7 @@ var AMCP;
         __extends(InfoQueuesCommand, _super);
         function InfoQueuesCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, InfoQueuesParser);
         }
         InfoQueuesCommand.commandString = "INFO QUEUES";
         return InfoQueuesCommand;
@@ -1075,6 +1120,7 @@ var AMCP;
         __extends(InfoThreadsCommand, _super);
         function InfoThreadsCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(200, ListValidator, InfoThreadsParser);
         }
         InfoThreadsCommand.commandString = "INFO THREADS";
         return InfoThreadsCommand;
@@ -1090,7 +1136,8 @@ var AMCP;
          */
         function InfoDelayCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "delay", null, new KeywordValidator("DELAY")));
+            this.paramProtocol = new Array(new ParamSignature(required, "delay", null, new KeywordValidator("DELAY")));
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, InfoDelayParser);
             this._objectParams["delay"] = "DELAY";
         }
         InfoDelayCommand.commandString = "INFO";
@@ -1098,7 +1145,7 @@ var AMCP;
     }(AbstractChannelOrLayerCommand));
     AMCP.InfoDelayCommand = InfoDelayCommand;
     /**
-     *
+     * @todo: response validator/parser
      */
     var CGInfoCommand = (function (_super) {
         __extends(CGInfoCommand, _super);
@@ -1107,7 +1154,8 @@ var AMCP;
          */
         function CGInfoCommand(params) {
             _super.call(this, params);
-            this.protocol = new Array(new ParamSignature(required, "info", null, new KeywordValidator("INFO")), new ParamSignature(optional, "flashLayer", null, new PositiveNumberValidatorBetween(0)));
+            this.paramProtocol = new Array(new ParamSignature(required, "info", null, new KeywordValidator("INFO")), new ParamSignature(optional, "flashLayer", null, new PositiveNumberValidatorBetween(0)));
+            this.responseProtocol = new ResponseSignature(201);
             this._objectParams["info"] = "INFO";
         }
         CGInfoCommand.commandString = "CG";
@@ -1121,6 +1169,7 @@ var AMCP;
         __extends(GlInfoCommand, _super);
         function GlInfoCommand() {
             _super.apply(this, arguments);
+            this.responseProtocol = new ResponseSignature(201, XMLValidator, GLParser);
         }
         GlInfoCommand.commandString = "GL INFO";
         return GlInfoCommand;
@@ -1133,7 +1182,7 @@ var AMCP;
         __extends(LogLevelCommand, _super);
         function LogLevelCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(optional, "level", null, new EnumValidator(ServerStateEnum_1.Enum.LogLevel)));
+            this.paramProtocol = new Array(new ParamSignature(optional, "level", null, new EnumValidator(ServerStateEnum_1.Enum.LogLevel)));
         }
         LogLevelCommand.commandString = "LOG LEVEL";
         return LogLevelCommand;
@@ -1146,7 +1195,7 @@ var AMCP;
         __extends(LogCategoryCommand, _super);
         function LogCategoryCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(optional, "calltrace", ServerStateEnum_1.Enum.LogCategory.CALLTRACE.value, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "communication", ServerStateEnum_1.Enum.LogCategory.COMMUNICATION.value, new BooleanValidatorWithDefaults(1, 0)));
+            this.paramProtocol = new Array(new ParamSignature(optional, "calltrace", ServerStateEnum_1.Enum.LogCategory.CALLTRACE.value, new BooleanValidatorWithDefaults(1, 0)), new ParamSignature(optional, "communication", ServerStateEnum_1.Enum.LogCategory.COMMUNICATION.value, new BooleanValidatorWithDefaults(1, 0)));
         }
         LogCategoryCommand.commandString = "LOG CATEGORY";
         LogCategoryCommand.protocolLogic = new Array(new OneOf("calltrace", "communication"));
@@ -1166,13 +1215,15 @@ var AMCP;
     }(AbstractCommand));
     AMCP.DiagCommand = DiagCommand;
     /**
-     *
+     * @todo: mixed mode!!!!
+     * 202/201
      */
     var HelpCommand = (function (_super) {
         __extends(HelpCommand, _super);
         function HelpCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(optional, "command", null, new EnumValidator(ServerStateEnum_1.Enum.Command)));
+            this.paramProtocol = new Array(new ParamSignature(optional, "command", null, new EnumValidator(ServerStateEnum_1.Enum.Command)));
+            this.responseProtocol = new ResponseSignature(200, ListValidator, HelpParser);
         }
         HelpCommand.commandString = "HELP";
         return HelpCommand;
@@ -1185,7 +1236,8 @@ var AMCP;
         __extends(HelpProducerCommand, _super);
         function HelpProducerCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(optional, "producer", null, new EnumValidator(ServerStateEnum_1.Enum.Producer)));
+            this.paramProtocol = new Array(new ParamSignature(optional, "producer", null, new EnumValidator(ServerStateEnum_1.Enum.Producer)));
+            this.responseProtocol = new ResponseSignature(200, ListValidator, HelpParser);
         }
         HelpProducerCommand.commandString = "HELP PRODUCER";
         return HelpProducerCommand;
@@ -1198,7 +1250,8 @@ var AMCP;
         __extends(HelpConsumerCommand, _super);
         function HelpConsumerCommand() {
             _super.apply(this, arguments);
-            this.protocol = new Array(new ParamSignature(optional, "consumer", null, new EnumValidator(ServerStateEnum_1.Enum.Consumer)));
+            this.paramProtocol = new Array(new ParamSignature(optional, "consumer", null, new EnumValidator(ServerStateEnum_1.Enum.Consumer)));
+            this.responseProtocol = new ResponseSignature(200, ListValidator, HelpParser);
         }
         HelpConsumerCommand.commandString = "HELP CONSUMER";
         return HelpConsumerCommand;
@@ -1211,7 +1264,7 @@ var AMCP;
 var AMCP;
 (function (AMCP) {
     /**
-     *
+     * @todo: response
      */
     var ByeCommand = (function (_super) {
         __extends(ByeCommand, _super);
@@ -1223,7 +1276,7 @@ var AMCP;
     }(AbstractCommand));
     AMCP.ByeCommand = ByeCommand;
     /**
-     *
+     * @todo: response
      */
     var KillCommand = (function (_super) {
         __extends(KillCommand, _super);
@@ -1235,7 +1288,7 @@ var AMCP;
     }(AbstractCommand));
     AMCP.KillCommand = KillCommand;
     /**
-     *
+     * @todo: response
      */
     var RestartCommand = (function (_super) {
         __extends(RestartCommand, _super);

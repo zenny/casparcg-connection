@@ -169,7 +169,7 @@ var Response;
          *
          */
         ThumbnailParser.prototype.parse = function (data) {
-            return "data:image/png;base64,\"+partialBase64" + data;
+            return "data:image/png;base64," + data;
         };
         return ThumbnailParser;
     }());

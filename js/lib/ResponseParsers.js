@@ -204,14 +204,14 @@ var Response;
                 var components = i.split(" ");
                 // is font
                 if (components.length === 2) {
-                    return { name: components[1].replace("\"", ""), type: "font" };
+                    return { name: components[1].replace(/\"/g, ""), type: "font" };
                 }
                 // is template
                 if (components.length === 4) {
-                    return { name: components[0].replace("\"", ""), type: "template" };
+                    return { name: components[0].replace(/\"/g, ""), type: "template" };
                 }
                 // is media
-                return { name: components[0].replace("\"", ""), type: components[1].toLowerCase() === "movie" ? "video" : components[1].toLowerCase() === "still" ? "image" : components[1].toLowerCase() };
+                return { name: components[0].replace(/\"/g, ""), type: components[1].toLowerCase() === "movie" ? "video" : components[1].toLowerCase() === "still" ? "image" : components[1].toLowerCase() };
             });
         };
         return PathParser;

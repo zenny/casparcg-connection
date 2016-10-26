@@ -36,6 +36,7 @@ var CasparCGSocket = (function (_super) {
         var _this = this;
         _super.call(this);
         this._reconnectAttempt = 0;
+        this._commandTimeout = 5000; // @todo make connectionOption!
         this._socketStatus = SocketState.unconfigured;
         this._host = host;
         this._port = port;
@@ -85,9 +86,13 @@ var CasparCGSocket = (function (_super) {
      *
      */
     CasparCGSocket.prototype.connect = function () {
+        var _this = this;
         this.socketStatus |= SocketState.connectionAttempt; // toggles triedConnection on
         this.socketStatus &= ~SocketState.lostConnection; // toggles triedConnection on
         this._client.connect(this._port, this._host);
+        if (this._reconnectAttempt === 0) {
+            this._reconnectInterval = global.setInterval(function () { return _this._autoReconnection(); }, this._reconnectDelay);
+        }
     };
     /**
      *
@@ -210,16 +215,25 @@ var CasparCGSocket = (function (_super) {
      *
      */
     CasparCGSocket.prototype.executeCommand = function (command) {
+        var _this = this;
         var commandString = command.constructor["commandString"] + (command.address ? " " + command.address : "");
         for (var i in command.payload) {
             var payload = command.payload[i];
             commandString += (commandString.length > 0 ? " " : "");
             commandString += (payload.key ? payload.key + " " : "") + payload.value;
         }
+        this._commandTimeoutTimer = global.setTimeout(function () { return _this._onTimeout(); }, this._commandTimeout);
         this._client.write(commandString + "\r\n");
         command.status = IAMCPStatus.Sent;
-        console.log(commandString);
+        this.log(commandString);
         return command;
+    };
+    /**
+     *
+     */
+    CasparCGSocket.prototype._onTimeout = function () {
+        global.clearTimeout(this._commandTimeoutTimer);
+        this.fire(Events_1.CasparCGSocketStatusEvent.TIMEOUT, new Events_1.CasparCGSocketStatusEvent(this.socketStatus));
     };
     /**
      * @todo:::
@@ -238,6 +252,7 @@ var CasparCGSocket = (function (_super) {
      *
      */
     CasparCGSocket.prototype._parseResponseGroups = function (i) {
+        global.clearTimeout(this._commandTimeoutTimer);
         i = (i.length > 2 && i.slice(0, 2) === "\r\n") ? i.slice(2) : i;
         if (AMCP_1.AMCPUtil.CasparCGSocketResponse.evaluateStatusCode(i) === 200) {
             this._parsedResponse = new AMCP_1.AMCPUtil.CasparCGSocketResponse(i);

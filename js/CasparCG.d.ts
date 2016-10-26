@@ -348,6 +348,10 @@ export declare class CasparCG extends EventEmitter implements ICasparCGConnectio
     /**
      *
      */
+    reconnect(): void;
+    /**
+     *
+     */
     /**
      * Setting the `host` will create a new [[CasparCGSocket]] connection.
      *
@@ -403,6 +407,10 @@ export declare class CasparCG extends EventEmitter implements ICasparCGConnectio
     /**
      *
      */
+    private _onSocketStatusTimeout();
+    /**
+     *
+     */
     commandQueue: Array<IAMCPCommand>;
     /**
      *
@@ -433,7 +441,7 @@ export declare class CasparCG extends EventEmitter implements ICasparCGConnectio
     /**
      *
      */
-    private _expediteCommand();
+    private _expediteCommand(flushSent?);
     /**
      * <http://casparcg.com/wiki/CasparCG_2.1_AMCP_Protocol#LOADBG>
      */

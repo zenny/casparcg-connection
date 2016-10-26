@@ -473,6 +473,10 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
 
 		this._createNewSocket(options);
 
+		this.on(CasparCGSocketStatusEvent.STATUS, (event) => this._onSocketStatusChange(event));
+		this.on(CasparCGSocketStatusEvent.TIMEOUT, (event) => this._onSocketStatusTimeout());
+		this.on(CasparCGSocketResponseEvent.RESPONSE, (event) => this._handleSocketResponse(event.response));
+
 		if (this.autoConnect) {
 			this.connect();
 		}
@@ -517,8 +521,6 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
 		this._socket = new CasparCGSocket(this.host, this.port, this.autoReconnect, this.autoReconnectInterval, this.autoReconnectAttempts);
 		this.setParent(this._socket);
 		this._socket.on("error", (error) => this._onSocketError(error));
-		this.on(CasparCGSocketStatusEvent.STATUS, (event) => this._onSocketStatusChange(event));
-		this.on(CasparCGSocketResponseEvent.RESPONSE, (event) => this._handleSocketResponse(event.response));
 
 		// inherit log method
 		this._socket.log = (args) => this._log(args);
@@ -546,6 +548,14 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
 		if (this._socket) {
 			this._socket.disconnect();
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public reconnect(): void {
+		this._createNewSocket(null, true);
+		this.connect();
 	}
 
 	/**
@@ -700,7 +710,7 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
 				if (this.onConnected) {
 					this.onConnected(this._connected);
 				}
-				this._expediteCommand();
+				this._expediteCommand(true);
 			}
 			if (!this._connected) {
 				this.fire(CasparCGSocketStatusEvent.DISCONNECTED, socketStatus);
@@ -708,6 +718,23 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
 					this.onDisconnected(this._connected);
 				}
 			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private _onSocketStatusTimeout(): void {
+		let shouldReset: Boolean;
+		while (this._sentCommands.length > 0) {
+			shouldReset = true;
+			let i: IAMCPCommand = this._sentCommands.shift();
+			i.status =  IAMCPStatus.Timeout;
+			i.reject(i);
+		}
+
+		if (shouldReset) {
+			this.reconnect();
 		}
 	}
 
@@ -847,6 +874,11 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
       			// create response object for response codes 200 to 202
         			// resolve with response object
 
+		// handle empty responses
+		if (this._sentCommands.length === 0) {
+			return;
+		}
+
 		let currentCommand: IAMCPCommand = this._sentCommands.shift();
 		if (!(currentCommand.response instanceof AMCPResponse)) {
 			currentCommand.response = new AMCPResponse();
@@ -867,7 +899,15 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
 	/**
 	 * 
 	 */
-	private _expediteCommand(): void {
+	private _expediteCommand(flushSent: boolean = false): void {
+
+		if (flushSent) {
+			while (this._sentCommands.length > 0) {
+				let i: IAMCPCommand = this._sentCommands.shift();
+				i.status =  IAMCPStatus.Failed;
+				i.reject(i);
+			}
+		}
 		if (this.connected) {
 			// @todo add TTL for cleanup on stuck commands
 
@@ -888,6 +928,9 @@ export class CasparCG extends EventEmitter implements ICasparCGConnection, Conne
 					this._socket.executeCommand(nextCommand);
 				}
 			}
+		} else {
+			// reconnect on missing queue
+			this.reconnect();
 		}
 	}
 

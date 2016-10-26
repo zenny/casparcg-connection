@@ -29,6 +29,7 @@ var Event;
         CasparCGSocketStatusEvent.STATUS_CHANGED = "casparcgsocketconnectioneventstatuschanged";
         CasparCGSocketStatusEvent.CONNECTED = "casparcgsocketconnectioneventstatusconnected";
         CasparCGSocketStatusEvent.DISCONNECTED = "casparcgsocketconnectioneventstatusdisconnected";
+        CasparCGSocketStatusEvent.TIMEOUT = "casparcgsocketconnectioneventstatustimeout";
         return CasparCGSocketStatusEvent;
     }(BaseEvent_1.Event.BaseEvent));
     Event.CasparCGSocketStatusEvent = CasparCGSocketStatusEvent;

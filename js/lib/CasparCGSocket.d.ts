@@ -37,6 +37,8 @@ export declare class CasparCGSocket extends EventEmitter implements ICasparCGSoc
     private _reconnectAttempts;
     private _reconnectAttempt;
     private _reconnectInterval;
+    private _commandTimeoutTimer;
+    private _commandTimeout;
     private _socketStatus;
     private _parsedResponse;
     /**
@@ -105,6 +107,10 @@ export declare class CasparCGSocket extends EventEmitter implements ICasparCGSoc
      *
      */
     executeCommand(command: IAMCPCommand): IAMCPCommand;
+    /**
+     *
+     */
+    private _onTimeout();
     /**
      * @todo:::
      */

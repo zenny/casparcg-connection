@@ -29,6 +29,7 @@ var Events_1 = require("./lib/event/Events");
 var CasparCG = (function (_super) {
     __extends(CasparCG, _super);
     function CasparCG(hostOrOptions, port) {
+        var _this = this;
         _super.call(this);
         this._queuedCommands = new Array();
         this._sentCommands = new Array();
@@ -74,6 +75,9 @@ var CasparCG = (function (_super) {
             options.port = port;
         }
         this._createNewSocket(options);
+        this.on(Events_1.CasparCGSocketStatusEvent.STATUS, function (event) { return _this._onSocketStatusChange(event); });
+        this.on(Events_1.CasparCGSocketStatusEvent.TIMEOUT, function (event) { return _this._onSocketStatusTimeout(); });
+        this.on(Events_1.CasparCGSocketResponseEvent.RESPONSE, function (event) { return _this._handleSocketResponse(event.response); });
         if (this.autoConnect) {
             this.connect();
         }
@@ -116,8 +120,6 @@ var CasparCG = (function (_super) {
         this._socket = new CasparCGSocket_1.CasparCGSocket(this.host, this.port, this.autoReconnect, this.autoReconnectInterval, this.autoReconnectAttempts);
         this.setParent(this._socket);
         this._socket.on("error", function (error) { return _this._onSocketError(error); });
-        this.on(Events_1.CasparCGSocketStatusEvent.STATUS, function (event) { return _this._onSocketStatusChange(event); });
-        this.on(Events_1.CasparCGSocketResponseEvent.RESPONSE, function (event) { return _this._handleSocketResponse(event.response); });
         // inherit log method
         this._socket.log = function (args) { return _this._log(args); };
     };
@@ -142,6 +144,13 @@ var CasparCG = (function (_super) {
         if (this._socket) {
             this._socket.disconnect();
         }
+    };
+    /**
+     *
+     */
+    CasparCG.prototype.reconnect = function () {
+        this._createNewSocket(null, true);
+        this.connect();
     };
     Object.defineProperty(CasparCG.prototype, "host", {
         /**
@@ -309,7 +318,7 @@ var CasparCG = (function (_super) {
                 if (this.onConnected) {
                     this.onConnected(this._connected);
                 }
-                this._expediteCommand();
+                this._expediteCommand(true);
             }
             if (!this._connected) {
                 this.fire(Events_1.CasparCGSocketStatusEvent.DISCONNECTED, socketStatus);
@@ -317,6 +326,21 @@ var CasparCG = (function (_super) {
                     this.onDisconnected(this._connected);
                 }
             }
+        }
+    };
+    /**
+     *
+     */
+    CasparCG.prototype._onSocketStatusTimeout = function () {
+        var shouldReset;
+        while (this._sentCommands.length > 0) {
+            shouldReset = true;
+            var i = this._sentCommands.shift();
+            i.status = IAMCPStatus.Timeout;
+            i.reject(i);
+        }
+        if (shouldReset) {
+            this.reconnect();
         }
     };
     Object.defineProperty(CasparCG.prototype, "commandQueue", {
@@ -441,6 +465,10 @@ var CasparCG = (function (_super) {
         // reject with error object
         // create response object for response codes 200 to 202
         // resolve with response object
+        // handle empty responses
+        if (this._sentCommands.length === 0) {
+            return;
+        }
         var currentCommand = this._sentCommands.shift();
         if (!(currentCommand.response instanceof AMCPResponse)) {
             currentCommand.response = new AMCPResponse();
@@ -459,7 +487,15 @@ var CasparCG = (function (_super) {
     /**
      *
      */
-    CasparCG.prototype._expediteCommand = function () {
+    CasparCG.prototype._expediteCommand = function (flushSent) {
+        if (flushSent === void 0) { flushSent = false; }
+        if (flushSent) {
+            while (this._sentCommands.length > 0) {
+                var i = this._sentCommands.shift();
+                i.status = IAMCPStatus.Failed;
+                i.reject(i);
+            }
+        }
         if (this.connected) {
             // @todo add TTL for cleanup on stuck commands
             // salvo mode
@@ -478,6 +514,10 @@ var CasparCG = (function (_super) {
                     this._socket.executeCommand(nextCommand);
                 }
             }
+        }
+        else {
+            // reconnect on missing queue
+            this.reconnect();
         }
     };
     ///*********************////

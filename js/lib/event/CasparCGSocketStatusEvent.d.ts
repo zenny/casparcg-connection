@@ -18,5 +18,6 @@ export declare namespace Event {
         static STATUS_CHANGED: string;
         static CONNECTED: string;
         static DISCONNECTED: string;
+        static TIMEOUT: string;
     }
 }
